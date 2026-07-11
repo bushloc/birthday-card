@@ -1,10 +1,10 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="referrer" content="no-referrer">
-    <title>Gửi Người Đặc Biệt ✨</title>
+    <title>Gửi Em</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@500;700&display=swap" rel="stylesheet">
@@ -16,7 +16,9 @@
         }
 
         body {
-            background: linear-gradient(135deg, #0f0c1b, #201a30, #0f0c1b);
+            --bgA: #0f0c1b;
+            --bgB: #201a30;
+            background: linear-gradient(135deg, var(--bgA), var(--bgB), var(--bgA));
             color: #ffffff;
             font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             min-height: 100vh;
@@ -27,6 +29,7 @@
             overflow: hidden;
             perspective: 1200px;
             touch-action: manipulation;
+            transition: background 0.7s ease;
         }
 
         /* Mưa rơi nền */
@@ -245,13 +248,32 @@
             justify-content: center;
             align-items: center;
             transform-origin: left center;
-            transition: transform 1.2s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.8s ease;
+            transition: transform 1.2s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.8s ease, clip-path 0.5s ease-out;
             backface-visibility: hidden;
             -webkit-backface-visibility: hidden;
             box-shadow: inset 0 0 40px rgba(255, 117, 151, 0.15), 0 20px 50px rgba(0, 0, 0, 0.5);
             animation: autoTilt 4s ease-in-out infinite alternate;
             overflow: hidden;
             transform: translateZ(0);
+            clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);
+        }
+
+        /* Tem ngày tháng nhỏ ở góc trên thiệp */
+        .cover-date-stamp {
+            position: absolute;
+            top: 14px;
+            left: 18px;
+            font-size: 0.62rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            color: rgba(255, 255, 255, 0.85);
+            border: 1.5px dashed rgba(255, 255, 255, 0.5);
+            padding: 4px 8px;
+            border-radius: 8px;
+            background: rgba(255, 117, 151, 0.12);
+            transform: rotate(-7deg);
+            z-index: 32;
+            pointer-events: none;
         }
 
         /* Đã bỏ rotateY liên tục vì kết hợp với backdrop-filter/perspective
@@ -303,7 +325,7 @@
         }
 
         .cat-container::after {
-            content: 'Không sợ thì bấm vào đâyyyyyy 🐾';
+            content: 'Không sợ thì bấm vào đây 😄';
             position: absolute;
             bottom: -28px;
             left: 50%;
@@ -387,12 +409,13 @@
             width: 92px;
             height: 92px;
             z-index: 37;
-            cursor: pointer;
+            cursor: grab;
             -webkit-tap-highlight-color: transparent;
             opacity: 0;
             pointer-events: none;
             transform: scale(0.3);
             transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s ease;
+            touch-action: none;
         }
 
             .corner-wrap.corner-visible {
@@ -898,7 +921,7 @@
         .corner-mascot {
             position: absolute;
             top: -58px;
-            left: 50%;
+            left: 20%;
             transform: translateX(-50%);
             width: 72px;
             height: auto;
@@ -906,6 +929,56 @@
             pointer-events: none;
             filter: drop-shadow(0 4px 8px rgba(0,0,0,0.4));
             animation: float 3.4s ease-in-out infinite;
+        }
+
+        /* Nút đổi theme màu nền */
+        .theme-toggle {
+            position: fixed;
+            top: 16px;
+            right: 16px;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            border: 1px solid rgba(255,255,255,0.3);
+            background: rgba(255,255,255,0.08);
+            backdrop-filter: blur(6px);
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 1000;
+            -webkit-tap-highlight-color: transparent;
+            transition: transform 0.2s ease, background 0.3s ease;
+        }
+
+            .theme-toggle:active {
+                transform: scale(0.9);
+                background: rgba(255, 117, 151, 0.25);
+            }
+
+        /* Mảnh giấy vụn bắn ra khi xé góc */
+        .fx-shred {
+            position: absolute;
+            width: 10px;
+            height: 14px;
+            border-radius: 2px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(255,117,151,0.9));
+            box-shadow: 0 2px 4px rgba(0,0,0,0.35);
+            animation: fx_shred_fly 0.65s ease-out forwards;
+            pointer-events: none;
+        }
+
+        @keyframes fx_shred_fly {
+            0% {
+                transform: translate(0, 0) rotate(0deg);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translate(var(--sx), var(--sy)) rotate(var(--rot));
+                opacity: 0;
+            }
         }
 
         /* Chú mèo thập thò ở góc thiệp */
@@ -950,6 +1023,7 @@
     <div class="background-rain" id="rainContainer"></div>
     <div class="background-rain" id="balloonContainer"></div>
     <div class="fullscreen-fx" id="fullscreenFx"></div>
+    <button class="theme-toggle" id="themeToggle" onclick="cycleTheme()" title="Đổi màu nền">🎨</button>
 
     <div class="card-perspective-container" id="cardContainer">
 
@@ -958,6 +1032,7 @@
 
         <!-- MẶT VỎ TRƯỚC (Cover) -->
         <div class="card-cover" id="cardCover">
+            <div class="cover-date-stamp">13.07.2026</div>
             <div class="cover-deco" style="top: 10%; left: 12%;">✨</div>
             <div class="cover-deco" style="top: 15%; right: 15%;">🐾</div>
             <div class="cover-deco" style="bottom: 12%; left: 12%;">🐾</div>
@@ -976,22 +1051,22 @@
                 <img src="https://i.imgur.com/R6gz8Kn.gif" alt="Cute Birthday Cat" class="cat-img">
             </div>
 
-            <!-- 4 miếng giấy góc, mỗi góc bấm sẽ xé bay đi, xuất hiện lần lượt kèm nhãn riêng -->
-            <div class="corner-wrap tl" onclick="tearCorner(this)">
+            <!-- 4 miếng giấy góc, kéo ra khỏi thiệp để xé, xuất hiện lần lượt kèm nhãn riêng -->
+            <div class="corner-wrap tl">
                 <div class="corner-paper-shape"></div>
-                <span class="tap-hint">Bấm ở đây nè</span>
+                <span class="tap-hint">Cắt ở đây đi</span>
             </div>
-            <div class="corner-wrap tr" onclick="tearCorner(this)">
+            <div class="corner-wrap tr">
                 <div class="corner-paper-shape"></div>
-                <span class="tap-hint">Ở đây nữa nè</span>
+                <span class="tap-hint">Cắt ở đây nữa nè</span>
             </div>
-            <div class="corner-wrap bl" onclick="tearCorner(this)">
+            <div class="corner-wrap bl">
                 <div class="corner-paper-shape"></div>
                 <span class="tap-hint">Ở đây nữa</span>
             </div>
-            <div class="corner-wrap br" onclick="tearCorner(this)">
+            <div class="corner-wrap br">
                 <div class="corner-paper-shape"></div>
-                <span class="tap-hint">Cái cuối rồi</span>
+                <span class="tap-hint">Cái cuổi rồi</span>
             </div>
         </div>
 
@@ -1022,6 +1097,48 @@
         let isOpen = false;
         let tornCount = 0;
         const TOTAL_CORNERS = 4;
+        const tornCorners = { tl: false, tr: false, bl: false, br: false };
+
+        // Cắt một góc "bị mất" (dạng vết xé lởm chởm) trên thân thiệp thật sự,
+        // không chỉ mảnh giấy trang trí bay ra.
+        function updateCoverBite() {
+            const cover = document.getElementById('cardCover');
+            if (!cover) return;
+
+            const n = 16; // độ sâu vết cắn tính theo %
+
+            const tl = tornCorners.tl
+                ? `0% ${n + 5}%, ${n - 5}% ${n - 3}%, ${n}% 0%`
+                : `0% 0%`;
+            const tr = tornCorners.tr
+                ? `${100 - n}% 0%, ${100 - n + 5}% ${n - 3}%, 100% ${n + 5}%`
+                : `100% 0%`;
+            const br = tornCorners.br
+                ? `100% ${100 - n - 5}%, ${100 - n + 5}% ${100 - n + 3}%, ${100 - n}% 100%`
+                : `100% 100%`;
+            const bl = tornCorners.bl
+                ? `${n}% 100%, ${n - 5}% ${100 - n + 3}%, 0% ${100 - n - 5}%`
+                : `0% 100%`;
+
+            cover.style.clipPath = `polygon(${tl}, ${tr}, ${br}, ${bl})`;
+        }
+
+        // ================================================================
+        // 🎨 ĐỔI THEME MÀU NỀN — bấm nút góc màn hình để đổi
+        // ================================================================
+        const themePalettes = [
+            { a: '#0f0c1b', b: '#201a30' }, // Tím huyền bí (mặc định)
+            { a: '#2b1620', b: '#4a2536' }, // Hồng pastel (bản tối)
+            { a: '#0d1b2b', b: '#16324a' }  // Xanh nhạt (bản tối)
+        ];
+        let themeIndex = 0;
+
+        function cycleTheme() {
+            themeIndex = (themeIndex + 1) % themePalettes.length;
+            const p = themePalettes[themeIndex];
+            document.body.style.setProperty('--bgA', p.a);
+            document.body.style.setProperty('--bgB', p.b);
+        }
 
         // ================================================================
         // 🖼️ CẤU HÌNH GIF — chỉ cần thêm/xoá link trong 2 danh sách dưới đây,
@@ -1045,7 +1162,7 @@
         ];
 
         // Nội dung lời chúc
-        const greetingText = "🐾 Chúc em có một tuổi mới luôn rạng rỡ, ngập tràn niềm vui và gặt hái được mọi điều tuyệt vời nhất mà em đang mong muốn. 🐾✨";
+        const greetingText = "🐾 Chúc em có một tuổi mới luôn rạng rỡ, ngập tràn niềm vui và gặt hái được mọi điều tuyệt vời nhất mà em đang mong muốn.😝";
 
         // Tách chữ làm hiệu ứng viết tay
         function setupTypingEffect() {
@@ -1090,8 +1207,15 @@
         function tearCorner(el) {
             if (el.classList.contains('torn') || isOpen) return;
 
+            spawnPaperShreds(el);
             el.classList.add('torn');
             tornCount++;
+
+            if (el.classList.contains('tl')) tornCorners.tl = true;
+            else if (el.classList.contains('tr')) tornCorners.tr = true;
+            else if (el.classList.contains('bl')) tornCorners.bl = true;
+            else if (el.classList.contains('br')) tornCorners.br = true;
+            updateCoverBite();
 
             if (tornCount >= TOTAL_CORNERS) {
                 setTimeout(() => {
@@ -1108,6 +1232,88 @@
                 }
             }
         }
+
+        // Vụn giấy bắn ra ngay tại vị trí góc vừa bị xé
+        function spawnPaperShreds(el) {
+            const fx = document.getElementById('fullscreenFx');
+            if (!fx) return;
+
+            const rect = el.getBoundingClientRect();
+            const cx = rect.left + rect.width / 2;
+            const cy = rect.top + rect.height / 2;
+
+            for (let i = 0; i < 9; i++) {
+                const shred = document.createElement('div');
+                shred.className = 'fx-shred';
+                shred.style.left = cx + 'px';
+                shred.style.top = cy + 'px';
+
+                const angle = Math.random() * Math.PI * 2;
+                const dist = Math.random() * 80 + 35;
+                shred.style.setProperty('--sx', Math.cos(angle) * dist + 'px');
+                shred.style.setProperty('--sy', Math.sin(angle) * dist + 'px');
+                shred.style.setProperty('--rot', (Math.random() * 420 - 210) + 'deg');
+
+                fx.appendChild(shred);
+                setTimeout(() => shred.remove(), 700);
+            }
+        }
+
+        // ===== KÉO (DRAG) ĐỂ XÉ GÓC — hoạt động mượt trên iPhone/iPad qua Pointer Events =====
+        const DRAG_TEAR_THRESHOLD = 55; // kéo xa hơn mức này (px) thì góc sẽ xé rời
+
+        function initCornerDrag(el) {
+            let dragging = false;
+            let startX = 0;
+            let startY = 0;
+            let dx = 0;
+            let dy = 0;
+
+            el.addEventListener('pointerdown', (e) => {
+                if (el.classList.contains('torn') || isOpen || !el.classList.contains('corner-visible')) return;
+                dragging = true;
+                startX = e.clientX;
+                startY = e.clientY;
+                dx = 0;
+                dy = 0;
+                el.style.transition = 'none';
+                el.setPointerCapture(e.pointerId);
+                el.style.cursor = 'grabbing';
+            });
+
+            el.addEventListener('pointermove', (e) => {
+                if (!dragging) return;
+                dx = e.clientX - startX;
+                dy = e.clientY - startY;
+                el.style.transform = `translate(${dx}px, ${dy}px) rotate(${dx * 0.25}deg)`;
+            });
+
+            function endDrag(e) {
+                if (!dragging) return;
+                dragging = false;
+                el.style.cursor = 'grab';
+
+                const dist = Math.sqrt(dx * dx + dy * dy);
+
+                if (dist > DRAG_TEAR_THRESHOLD) {
+                    // Kéo đủ xa -> góc xé bay theo đúng hướng người dùng vừa kéo
+                    const flyX = dx * 3.2 + (dx >= 0 ? 120 : -120);
+                    const flyY = dy * 3.2 - 60;
+                    el.style.transition = 'transform 0.5s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease';
+                    el.style.transform = `translate(${flyX}px, ${flyY}px) rotate(${dx * 0.6}deg) scale(0.5)`;
+                    tearCorner(el);
+                } else {
+                    // Chưa đủ xa -> góc giấy bật trở lại vị trí cũ
+                    el.style.transition = 'transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)';
+                    el.style.transform = '';
+                }
+            }
+
+            el.addEventListener('pointerup', endDrag);
+            el.addEventListener('pointercancel', endDrag);
+        }
+
+        document.querySelectorAll('.corner-wrap').forEach((el) => initCornerDrag(el));
 
         function openBoxAndCelebrate() {
             if (isOpen) return;
@@ -1259,11 +1465,19 @@
 
             // Khôi phục lại trạng thái ban đầu: ẩn 4 góc giấy, hiện lại mèo xác nhận
             tornCount = 0;
+            tornCorners.tl = false;
+            tornCorners.tr = false;
+            tornCorners.bl = false;
+            tornCorners.br = false;
+            updateCoverBite();
             const cover = document.getElementById('cardCover');
             if (cover) cover.classList.remove('corners-visible');
             document.querySelectorAll('.corner-wrap').forEach(el => {
                 el.classList.remove('torn');
                 el.classList.remove('corner-visible');
+                el.style.transform = '';
+                el.style.transition = '';
+                el.style.cursor = 'grab';
             });
             const catContainer = document.getElementById('catContainer');
             if (catContainer) catContainer.classList.remove('cat-fade');
@@ -1274,19 +1488,23 @@
             }, 300);
         }
 
-        // Tạo hiệu ứng mưa nền
+        // Tạo hiệu ứng mưa nền — mỗi lần tải trang random giữa cánh hoa hoặc tuyết rơi
         const rainContainer = document.getElementById('rainContainer');
-        const catIcons = ['🐱', '🐾', '🐈', '😻', '✨'];
-        const rainColors = ['#ff7597', '#f7d070', '#ffffff', '#ffb6c1'];
+        const rainThemes = {
+            petal: { icons: ['🌸', '🌺', '🌷', '🌼', '💮'], colors: ['#ff9ec4', '#ffb6c1', '#ffd1dc', '#ffffff', '#ff7597'] },
+            snow: { icons: ['❄️', '❅', '❆', '✨'], colors: ['#ffffff', '#cfeeff', '#a0e7e5', '#e0f7ff'] }
+        };
+        const themeKeys = Object.keys(rainThemes);
+        const chosenRain = rainThemes[themeKeys[Math.floor(Math.random() * themeKeys.length)]];
         const totalItems = 25;
 
         for (let i = 0; i < totalItems; i++) {
             const item = document.createElement('div');
             item.classList.add('cat-rain-item');
-            item.innerHTML = catIcons[Math.floor(Math.random() * catIcons.length)];
+            item.innerHTML = chosenRain.icons[Math.floor(Math.random() * chosenRain.icons.length)];
 
             item.style.fontSize = Math.random() * 16 + 12 + 'px';
-            item.style.color = rainColors[Math.floor(Math.random() * rainColors.length)];
+            item.style.color = chosenRain.colors[Math.floor(Math.random() * chosenRain.colors.length)];
             item.style.left = Math.random() * 100 + 'vw';
 
             item.style.animationDuration = Math.random() * 4 + 4 + 's';
