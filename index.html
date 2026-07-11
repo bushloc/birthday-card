@@ -1,0 +1,1330 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="referrer" content="no-referrer">
+    <title>Gửi Người Đặc Biệt ✨</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f0c1b, #201a30, #0f0c1b);
+            color: #ffffff;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            perspective: 1200px;
+            touch-action: manipulation;
+        }
+
+        /* Mưa rơi nền */
+        .background-rain {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 1;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+        }
+
+        .cat-rain-item {
+            position: absolute;
+            top: -50px;
+            opacity: 0.6;
+            animation: cat_drop linear infinite;
+        }
+
+        @keyframes cat_drop {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 0;
+            }
+
+            10% {
+                opacity: 0.6;
+            }
+
+            90% {
+                opacity: 0.6;
+            }
+
+            100% {
+                transform: translateY(105vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* Particles lấp lánh (sao twinkle) - tạo chiều sâu cho nền */
+        .star-particle {
+            position: absolute;
+            border-radius: 50%;
+            background: #ffffff;
+            box-shadow: 0 0 6px 1px rgba(255,255,255,0.85);
+            animation: star_twinkle ease-in-out infinite;
+        }
+
+        @keyframes star_twinkle {
+            0%, 100% {
+                opacity: 0.15;
+                transform: scale(0.8);
+            }
+
+            50% {
+                opacity: 1;
+                transform: scale(1.2);
+            }
+        }
+
+        /* Bóng bay bay lên, lắc nhẹ tự nhiên */
+        .balloon-item {
+            position: absolute;
+            bottom: -120px;
+            opacity: 0.9;
+            animation-name: balloon_rise;
+            animation-timing-function: ease-in-out;
+            animation-iteration-count: infinite;
+        }
+
+            .balloon-item::after {
+                content: '';
+                position: absolute;
+                left: 50%;
+                top: 100%;
+                width: 1px;
+                height: 58px;
+                background: rgba(255,255,255,0.35);
+                transform: translateX(-50%);
+            }
+
+        .balloon-gif {
+            display: block;
+            width: 46px;
+            height: auto;
+            filter: drop-shadow(0 4px 10px rgba(0,0,0,0.35));
+        }
+
+        @keyframes balloon_rise {
+            0% {
+                transform: translate(0, 0) rotate(0deg);
+            }
+
+            20% {
+                transform: translate(18px, -20vh) rotate(4deg);
+            }
+
+            40% {
+                transform: translate(-15px, -40vh) rotate(-4deg);
+            }
+
+            60% {
+                transform: translate(20px, -60vh) rotate(5deg);
+            }
+
+            80% {
+                transform: translate(-18px, -85vh) rotate(-3deg);
+            }
+
+            100% {
+                transform: translate(0, -115vh) rotate(0deg);
+            }
+        }
+
+        /* Khung bọc không gian 3D */
+        .card-perspective-container {
+            position: relative;
+            width: 90%;
+            max-width: 450px;
+            height: 480px;
+            z-index: 10;
+            transform-style: preserve-3d;
+        }
+
+            /* Card thở nhẹ - tăng cảm giác sống động khi đã mở */
+            .card-perspective-container.breathing {
+                animation: card_breathe 3.2s ease-in-out infinite;
+            }
+
+        @keyframes card_breathe {
+            0%, 100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.01);
+            }
+        }
+
+        /* ===== TAI MÈO — tạo dáng thiệp hình mặt mèo ===== */
+        .card-ear {
+            position: absolute;
+            top: -34px;
+            width: 0;
+            height: 0;
+            border-left: 42px solid transparent;
+            border-right: 42px solid transparent;
+            border-bottom: 62px solid #191428;
+            z-index: 4;
+            filter: drop-shadow(0 -3px 6px rgba(0,0,0,0.35));
+        }
+
+            .card-ear.ear-left {
+                left: 8%;
+                transform: rotate(-16deg);
+                transform-origin: bottom center;
+            }
+
+            .card-ear.ear-right {
+                right: 8%;
+                transform: rotate(16deg);
+                transform-origin: bottom center;
+            }
+
+            .card-ear::after {
+                content: '';
+                position: absolute;
+                bottom: 10px;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 0;
+                height: 0;
+                border-left: 20px solid transparent;
+                border-right: 20px solid transparent;
+                border-bottom: 32px solid #ff7597;
+            }
+
+        /* Hộp thư chúc mừng chính (Mặt trong) */
+        .birthday-card {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.07);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 2px solid rgba(255, 117, 151, 0.3);
+            padding: 40px 30px;
+            border-radius: 24px;
+            text-align: center;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), 0 0 30px rgba(255, 117, 151, 0.1);
+            transform-style: preserve-3d;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: transform 0.8s ease;
+        }
+
+        /* LỚP VỎ NGOÀI CỦA THIỆP (Cover) */
+        .card-cover {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(25, 20, 40, 0.95);
+            border: 2px solid rgba(255, 117, 151, 0.4);
+            border-radius: 24px;
+            z-index: 30;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transform-origin: left center;
+            transition: transform 1.2s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.8s ease;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            box-shadow: inset 0 0 40px rgba(255, 117, 151, 0.15), 0 20px 50px rgba(0, 0, 0, 0.5);
+            animation: autoTilt 4s ease-in-out infinite alternate;
+            overflow: hidden;
+            transform: translateZ(0);
+        }
+
+        /* Đã bỏ rotateY liên tục vì kết hợp với backdrop-filter/perspective
+           gây hiện tượng mờ hình + đôi lúc mất vùng bấm trên một số thiết bị.
+           Giữ lại hiệu ứng phồng nhẹ để thiệp vẫn "sống động". */
+        @keyframes autoTilt {
+            0%, 100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.008);
+            }
+        }
+
+        .cover-title {
+            position: absolute;
+            top: 22%;
+            font-size: 1.6rem;
+            font-weight: 600;
+            color: #ffffff;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(255, 117, 151, 0.6);
+            z-index: 32;
+            pointer-events: none;
+        }
+
+        .cat-container {
+            margin-top: 160px;
+            display: inline-block;
+            position: relative;
+            animation: float 3s ease-in-out infinite;
+            -webkit-tap-highlight-color: transparent;
+            cursor: pointer;
+            z-index: 31;
+            transition: opacity 0.4s ease, transform 0.4s ease;
+        }
+
+            .cat-container.cat-fade {
+                opacity: 0;
+                transform: scale(0.7);
+                pointer-events: none;
+            }
+
+        .cat-img {
+            width: 110px;
+            height: auto;
+            filter: drop-shadow(0 0 10px rgba(255, 117, 151, 0.3));
+        }
+
+        .cat-container::after {
+            content: 'Không sợ thì bấm vào đâyyyyyy 🐾';
+            position: absolute;
+            bottom: -28px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #ff7597;
+            font-size: 0.75rem;
+            font-weight: bold;
+            padding: 5px 14px;
+            border-radius: 14px;
+            white-space: nowrap;
+            box-shadow: 0 4px 10px rgba(255, 117, 151, 0.4);
+            animation: pulseButton 1.5s ease-in-out infinite alternate;
+        }
+
+        @keyframes pulseButton {
+            0% {
+                transform: translateX(-50%) scale(0.95);
+                opacity: 0.9;
+            }
+
+            100% {
+                transform: translateX(-50%) scale(1.05);
+                opacity: 1;
+                box-shadow: 0 6px 18px rgba(255, 117, 151, 0.7);
+            }
+        }
+
+        /* Ruy-băng & Dấu sáp */
+        .ribbon-left, .ribbon-right {
+            position: absolute;
+            top: 45%;
+            height: 45px;
+            width: 50%;
+            background: linear-gradient(to bottom, #ff5376 0%, #ff7597 50%, #d63e60 100%);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3), inset 0 2px 4px rgba(255,255,255,0.2);
+            z-index: 33;
+            transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .ribbon-left {
+            left: 0;
+            transform-origin: left center;
+            transform: translateY(-50%);
+        }
+
+        .ribbon-right {
+            right: 0;
+            transform-origin: right center;
+            transform: translateY(-50%);
+        }
+
+        .wax-seal {
+            position: absolute;
+            top: 45%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(1);
+            width: 85px;
+            height: 85px;
+            background: radial-gradient(circle at 35% 35%, #ff5d82 0%, #ff335f 60%, #bd1139 100%);
+            border-radius: 50%;
+            z-index: 34;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.5), inset 0 4px 6px rgba(255,255,255,0.4), inset -4px -6px 10px rgba(0,0,0,0.4);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: transform 0.5s ease, opacity 0.5s ease;
+        }
+
+            .wax-seal::before {
+                content: '';
+                position: absolute;
+                width: 68px;
+                height: 68px;
+                border: 2px dashed rgba(255, 255, 255, 0.25);
+                border-radius: 50%;
+            }
+
+        /* ===== GÓC GIẤY CÓ THỂ XÉ ===== */
+        .corner-wrap {
+            position: absolute;
+            width: 92px;
+            height: 92px;
+            z-index: 37;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+            opacity: 0;
+            pointer-events: none;
+            transform: scale(0.3);
+            transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s ease;
+        }
+
+            .corner-wrap.corner-visible {
+                opacity: 1;
+                pointer-events: auto;
+                transform: scale(1);
+            }
+
+        .corner-paper-shape {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.22), rgba(255,117,151,0.32));
+            box-shadow: 0 4px 12px rgba(0,0,0,0.35), inset 0 0 10px rgba(255,255,255,0.15);
+        }
+
+        .tap-hint {
+            position: absolute;
+            font-size: 0.62rem;
+            font-weight: bold;
+            color: #fff;
+            background: #ff7597;
+            padding: 4px 9px;
+            border-radius: 10px;
+            white-space: nowrap;
+            box-shadow: 0 3px 8px rgba(255, 117, 151, 0.55);
+            animation: hint_pulse 1.3s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes hint_pulse {
+            0%, 100% {
+                transform: scale(0.92);
+                opacity: 0.75;
+            }
+
+            50% {
+                transform: scale(1.06);
+                opacity: 1;
+            }
+        }
+
+        .corner-wrap.tl {
+            top: 0;
+            left: 0;
+        }
+
+            .corner-wrap.tl .corner-paper-shape {
+                clip-path: polygon(0 0, 100% 0, 0 100%);
+                border-radius: 24px 0 0 0;
+            }
+
+            .corner-wrap.tl .tap-hint {
+                top: 18px;
+                left: 8px;
+            }
+
+        .corner-wrap.tr {
+            top: 0;
+            right: 0;
+        }
+
+            .corner-wrap.tr .corner-paper-shape {
+                clip-path: polygon(0 0, 100% 0, 100% 100%);
+                border-radius: 0 24px 0 0;
+            }
+
+            .corner-wrap.tr .tap-hint {
+                top: 18px;
+                right: 8px;
+            }
+
+        .corner-wrap.bl {
+            bottom: 0;
+            left: 0;
+        }
+
+            .corner-wrap.bl .corner-paper-shape {
+                clip-path: polygon(0 0, 100% 100%, 0 100%);
+                border-radius: 0 0 0 24px;
+            }
+
+            .corner-wrap.bl .tap-hint {
+                bottom: 18px;
+                left: 8px;
+            }
+
+        .corner-wrap.br {
+            bottom: 0;
+            right: 0;
+        }
+
+            .corner-wrap.br .corner-paper-shape {
+                clip-path: polygon(100% 0, 100% 100%, 0 100%);
+                border-radius: 0 0 24px 0;
+            }
+
+            .corner-wrap.br .tap-hint {
+                bottom: 18px;
+                right: 8px;
+            }
+
+        .corner-wrap.torn {
+            pointer-events: none;
+            opacity: 0;
+        }
+
+        .corner-wrap.tl.torn {
+            transform: translate(-140px, -140px) rotate(-70deg) scale(0.5);
+        }
+
+        .corner-wrap.tr.torn {
+            transform: translate(140px, -140px) rotate(70deg) scale(0.5);
+        }
+
+        .corner-wrap.bl.torn {
+            transform: translate(-140px, 140px) rotate(70deg) scale(0.5);
+        }
+
+        .corner-wrap.br.torn {
+            transform: translate(140px, 140px) rotate(-70deg) scale(0.5);
+        }
+
+        /* Hiệu ứng mở thiệp */
+        .card-perspective-container.is-open .card-cover {
+            transform: rotateY(-130deg);
+            opacity: 0;
+            pointer-events: none;
+            animation: none;
+        }
+
+        .card-perspective-container.is-open .wax-seal {
+            transform: translate(-50%, -50%) scale(0);
+            opacity: 0;
+        }
+
+        .card-perspective-container.is-open .ribbon-left {
+            transform: translateY(-50%) scaleX(0);
+        }
+
+        .card-perspective-container.is-open .ribbon-right {
+            transform: translateY(-50%) scaleX(0);
+        }
+
+        .card-perspective-container.is-open .birthday-card {
+            transform: translateZ(20px);
+            background: rgba(255, 255, 255, 0.09);
+        }
+
+        .cover-deco {
+            position: absolute;
+            font-size: 1.2rem;
+            opacity: 0.7;
+            animation: twinkle 2s ease-in-out infinite alternate;
+            pointer-events: none;
+            z-index: 30;
+        }
+
+        @keyframes twinkle {
+            0% {
+                transform: scale(0.8) rotate(0deg);
+                opacity: 0.3;
+            }
+
+            100% {
+                transform: scale(1.2) rotate(15deg);
+                opacity: 0.8;
+                filter: drop-shadow(0 0 5px #ff7597);
+            }
+        }
+
+        /* Bánh kem rơi */
+        .falling-cake {
+            position: absolute;
+            top: -250px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 7.5rem;
+            z-index: 20;
+            opacity: 0;
+            pointer-events: none;
+            filter: drop-shadow(0 0 25px rgba(247, 208, 112, 0.8));
+        }
+
+        .cake-drop-animation {
+            animation: cake_bounce_land 1.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        @keyframes cake_bounce_land {
+            0% {
+                top: -500px;
+                opacity: 0;
+                transform: translateX(-50%) scale(0.3) rotate(-45deg);
+            }
+
+            40% {
+                opacity: 1;
+                transform: translateX(-50%) scale(1) rotate(0deg);
+            }
+
+            70% {
+                top: -95px;
+                transform: translateX(-50%) scale(1.2, 0.8);
+            }
+
+            85% {
+                top: -115px;
+                transform: translateX(-50%) scale(0.9, 1.1);
+            }
+
+            100% {
+                top: -105px;
+                opacity: 1;
+                transform: translateX(-50%) scale(1) rotate(0deg);
+            }
+        }
+
+        /* KHUNG NỘI DUNG MẶT TRONG THIỆP */
+        .card-inner-content {
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .card-perspective-container.is-open .card-inner-content {
+            opacity: 1;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            color: #ff7597;
+            margin-bottom: 20px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-shadow: 0 0 8px rgba(255, 117, 151, 0.9), 0 0 16px rgba(255, 92, 200, 0.7), 0 0 28px rgba(190, 90, 255, 0.55), 0 0 42px rgba(150, 60, 255, 0.35);
+            opacity: 0;
+            transform: scale(0.8);
+            transition: all 0.5s ease;
+        }
+
+        .card-perspective-container.is-open h1 {
+            opacity: 1;
+            transform: scale(1);
+            transition-delay: 0.5s;
+        }
+
+        /* Chữ viết tay */
+        .typing-box {
+            font-family: 'Dancing Script', cursive;
+            font-size: 1.5rem;
+            font-weight: 600;
+            line-height: 1.7;
+            color: #e0e0e0;
+            text-align: center;
+            max-width: 100%;
+            word-wrap: break-word;
+            margin-bottom: 20px;
+        }
+
+        .word-span {
+            display: inline;
+            opacity: 0;
+            transform: translateY(8px) scale(0.9);
+            filter: blur(2px);
+            margin-right: 5px;
+        }
+
+            .word-span.write-active {
+                animation: writeWordIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.15) forwards;
+            }
+
+        @keyframes writeWordIn {
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+                filter: blur(0);
+            }
+        }
+
+        .highlight {
+            color: #f7d070;
+            font-weight: 600;
+            text-shadow: 0 0 5px rgba(247, 208, 112, 0.3);
+        }
+
+        /* SỬA LẠI: Thiết lập hiển thị cho 2 GIF ở góc đáy tấm thiệp */
+        .corner-gif {
+            position: absolute;
+            bottom: 10px;
+            width: 75px;
+            height: auto;
+            display: block;
+            visibility: hidden; /* Dùng visibility thay cho ẩn hoàn toàn */
+            opacity: 0;
+            transform: scale(0.5);
+            transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            pointer-events: none;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.4));
+            z-index: 40;
+        }
+
+            .corner-gif.left {
+                left: 5px;
+            }
+
+            .corner-gif.right {
+                right: 5px;
+            }
+
+            /* Khi nhận class kích hoạt hiển thị từ JS */
+            .corner-gif.show-gif {
+                visibility: visible;
+                opacity: 1;
+                transform: scale(1);
+            }
+
+        /* Nút Đóng Thiệp */
+        .close-btn {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            color: rgba(255, 255, 255, 0.7);
+            padding: 8px 18px;
+            font-size: 0.85rem;
+            border-radius: 20px;
+            cursor: pointer;
+            outline: none;
+            letter-spacing: 0.5px;
+            -webkit-tap-highlight-color: transparent;
+            opacity: 0;
+            transition: opacity 0.5s ease, transform 0.2s ease;
+            z-index: 23;
+        }
+
+        /* Khi hiện GIF góc, nút đóng cũng sẽ hiện theo mượt mà */
+        .corner-gif.show-gif ~ .close-btn {
+            opacity: 1;
+        }
+
+        .close-btn:active {
+            background: rgba(255, 117, 151, 0.15);
+            border-color: rgba(255, 117, 151, 0.5);
+            color: #ff7597;
+            transform: scale(0.95);
+        }
+
+        /* Pháo giấy bùng nổ */
+        .confetti {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            z-index: 25;
+            pointer-events: none;
+            opacity: 0;
+        }
+
+        .pop-confetti {
+            animation: explode 0.8s ease-out forwards;
+        }
+
+        @keyframes explode {
+            0% {
+                transform: translate(0, 0) scale(1);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translate(var(--x), var(--y)) scale(0.5);
+                opacity: 0;
+            }
+        }
+
+        /* Hiệu ứng hạt lấp lánh bay lên */
+        .custom-gif-item {
+            position: absolute;
+            z-index: 15;
+            pointer-events: none;
+            width: 55px;
+            height: auto;
+            border-radius: 8px;
+            opacity: 0;
+            animation: float_up_gif 1.6s ease-out forwards;
+        }
+
+        @keyframes float_up_gif {
+            0% {
+                transform: translateY(20px) scale(0.4);
+                opacity: 0;
+            }
+
+            15% {
+                opacity: 0.9;
+            }
+
+            85% {
+                opacity: 0.9;
+            }
+
+            100% {
+                transform: translateY(var(--move-y)) translateX(var(--move-x)) scale(1.2) rotate(var(--rotate));
+                opacity: 0;
+            }
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-12px);
+            }
+        }
+
+        /* ===== Lớp hiệu ứng PHỦ TOÀN MÀN HÌNH: bong bóng + pháo hoa ===== */
+        .fullscreen-fx {
+            position: fixed;
+            inset: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 999;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .fx-balloon {
+            position: absolute;
+            bottom: -80px;
+            font-size: 34px;
+            animation-name: fx_balloon_rise;
+            animation-timing-function: ease-in-out;
+            animation-fill-mode: forwards;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.35));
+        }
+
+        @keyframes fx_balloon_rise {
+            0% {
+                transform: translate(0, 0) rotate(0deg);
+                opacity: 0;
+            }
+
+            10% {
+                opacity: 1;
+            }
+
+            50% {
+                transform: translate(var(--sway), -60vh) rotate(6deg);
+            }
+
+            100% {
+                transform: translate(0, -125vh) rotate(-6deg);
+                opacity: 0;
+            }
+        }
+
+        .fx-spark {
+            position: absolute;
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            animation: fx_spark_burst 0.9s ease-out forwards;
+            box-shadow: 0 0 6px 1px currentColor;
+        }
+
+        @keyframes fx_spark_burst {
+            0% {
+                transform: translate(0, 0) scale(1);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translate(var(--sx), var(--sy)) scale(0.4);
+                opacity: 0;
+            }
+        }
+
+        .fx-flash {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #ffffff;
+            animation: fx_flash_pop 0.35s ease-out forwards;
+        }
+
+        @keyframes fx_flash_pop {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+
+            100% {
+                transform: scale(9);
+                opacity: 0;
+            }
+        }
+
+        /* GIF góc thiệp do bạn thêm vào */
+        .corner-mascot {
+            position: absolute;
+            top: -58px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 72px;
+            height: auto;
+            z-index: 38;
+            pointer-events: none;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.4));
+            animation: float 3.4s ease-in-out infinite;
+        }
+
+        /* Chú mèo thập thò ở góc thiệp */
+        .peek-cat {
+            position: absolute;
+            bottom: -14px;
+            right: 18px;
+            font-size: 42px;
+            z-index: 36;
+            transform-origin: bottom center;
+            transform: translateY(68%) rotate(0deg);
+            animation: cat_peek 7s ease-in-out infinite;
+            pointer-events: none;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.45));
+        }
+
+        @keyframes cat_peek {
+            0%, 8% {
+                transform: translateY(68%) rotate(0deg);
+            }
+
+            18% {
+                transform: translateY(0%) rotate(-6deg);
+            }
+
+            28% {
+                transform: translateY(0%) rotate(5deg);
+            }
+
+            40% {
+                transform: translateY(0%) rotate(0deg);
+            }
+
+            52%, 100% {
+                transform: translateY(68%) rotate(0deg);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="background-rain" id="rainContainer"></div>
+    <div class="background-rain" id="balloonContainer"></div>
+    <div class="fullscreen-fx" id="fullscreenFx"></div>
+
+    <div class="card-perspective-container" id="cardContainer">
+
+        <div class="card-ear ear-left"></div>
+        <div class="card-ear ear-right"></div>
+
+        <!-- MẶT VỎ TRƯỚC (Cover) -->
+        <div class="card-cover" id="cardCover">
+            <div class="cover-deco" style="top: 10%; left: 12%;">✨</div>
+            <div class="cover-deco" style="top: 15%; right: 15%;">🐾</div>
+            <div class="cover-deco" style="bottom: 12%; left: 12%;">🐾</div>
+            <div class="cover-deco" style="bottom: 10%; right: 12%;">✨</div>
+
+            <div class="cover-title"></div>
+
+            <div class="ribbon-left"></div>
+            <div class="ribbon-right"></div>
+
+            <div class="wax-seal">
+                <span style="font-size: 1.8rem; color: #fff; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.4));">✉</span>
+            </div>
+
+            <div class="cat-container" id="catContainer" onclick="revealCorners()">
+                <img src="https://i.imgur.com/R6gz8Kn.gif" alt="Cute Birthday Cat" class="cat-img">
+            </div>
+
+            <!-- 4 miếng giấy góc, mỗi góc bấm sẽ xé bay đi, xuất hiện lần lượt kèm nhãn riêng -->
+            <div class="corner-wrap tl" onclick="tearCorner(this)">
+                <div class="corner-paper-shape"></div>
+                <span class="tap-hint">Bấm ở đây nè</span>
+            </div>
+            <div class="corner-wrap tr" onclick="tearCorner(this)">
+                <div class="corner-paper-shape"></div>
+                <span class="tap-hint">Ở đây nữa nè</span>
+            </div>
+            <div class="corner-wrap bl" onclick="tearCorner(this)">
+                <div class="corner-paper-shape"></div>
+                <span class="tap-hint">Ở đây nữa</span>
+            </div>
+            <div class="corner-wrap br" onclick="tearCorner(this)">
+                <div class="corner-paper-shape"></div>
+                <span class="tap-hint">Cái cuối rồi</span>
+            </div>
+        </div>
+
+        <!-- MẶT NỀN TRONG THIỆP -->
+        <div class="birthday-card" id="card">
+            <div class="falling-cake" id="birthdayCake">🎂</div>
+
+            <div class="card-inner-content">
+                <h1>HAPPY BIRTHDAY!</h1>
+
+                <div class="typing-box" id="typingBox"></div>
+
+                <!-- Đã cập nhật lại link ảnh GIF mèo dễ thương hoạt động ổn định trên mọi nền tảng -->
+                <img src="https://i.imgur.com/zs8B8im.gif" alt="Left Corner GIF" class="corner-gif left" id="leftGif">
+                <img src="https://i.imgur.com/moReomh.gif" alt="Right Corner GIF" class="corner-gif right" id="rightGif">
+
+                <button class="close-btn" onclick="closeBox(event)">Đóng lại ↩</button>
+            </div>
+        </div>
+
+        <img src="https://i.imgur.com/nnCiiiA.gif" alt="Mascot GIF" class="corner-mascot">
+
+        <div class="peek-cat">🐱</div>
+
+    </div>
+
+    <script>
+        let isOpen = false;
+        let tornCount = 0;
+        const TOTAL_CORNERS = 4;
+
+        // ================================================================
+        // 🖼️ CẤU HÌNH GIF — chỉ cần thêm/xoá link trong 2 danh sách dưới đây,
+        // KHÔNG cần sửa gì thêm ở phần code phía dưới.
+        // ================================================================
+
+        // 1) GIF dùng cho hiệu ứng "bong bóng bay" ở NỀN (ngoài thiệp).
+        //    Muốn thêm ảnh mới: thêm 1 dòng "https://..." vào mảng bên dưới.
+        const BALLOON_GIFS = [
+            'https://i.imgur.com/Z377rW3.gif',
+            'https://i.imgur.com/jlNya2B.gif',
+            // 'https://link-gif-moi-cua-ban.gif', // <-- thêm link mới ở đây
+        ];
+
+        // 2) GIF dùng cho hiệu ứng bay lên khi MỞ THIỆP (bong bóng, hoa, pháo bông...).
+        //    Muốn thêm ảnh mới: thêm 1 dòng "https://..." vào mảng bên dưới.
+        const CELEBRATION_GIFS = [
+            'https://i.imgur.com/Z377rW3.gif',
+            'https://i.imgur.com/jlNya2B.gif',
+            // 'https://link-gif-moi-cua-ban.gif', // <-- thêm link mới ở đây
+        ];
+
+        // Nội dung lời chúc
+        const greetingText = "🐾 Chúc em có một tuổi mới luôn rạng rỡ, ngập tràn niềm vui và gặt hái được mọi điều tuyệt vời nhất mà em đang mong muốn. 🐾✨";
+
+        // Tách chữ làm hiệu ứng viết tay
+        function setupTypingEffect() {
+            const typingBox = document.getElementById('typingBox');
+            typingBox.innerHTML = '';
+
+            const words = greetingText.split(' ');
+
+            words.forEach((word, index) => {
+                const span = document.createElement('span');
+                span.classList.add('word-span');
+
+                if (word.startsWith('{') && word.endsWith('}')) {
+                    span.classList.add('highlight');
+                    span.innerText = word.slice(1, -1);
+                } else {
+                    span.innerText = word;
+                }
+
+                typingBox.appendChild(span);
+            });
+        }
+
+        setupTypingEffect();
+
+        // Bấm vào mèo -> xác nhận muốn mở thiệp -> chỉ hiện góc giấy ĐẦU TIÊN
+        function revealCorners() {
+            const cover = document.getElementById('cardCover');
+            if (!cover || cover.classList.contains('corners-visible')) return;
+            cover.classList.add('corners-visible');
+
+            const catContainer = document.getElementById('catContainer');
+            if (catContainer) catContainer.classList.add('cat-fade');
+
+            const corners = document.querySelectorAll('.corner-wrap');
+            if (corners.length > 0) {
+                corners[0].classList.add('corner-visible');
+            }
+        }
+
+        // Bấm vào 1 góc giấy -> góc đó xé bay ra. Đủ 4 góc thì mở toàn bộ thiệp.
+        function tearCorner(el) {
+            if (el.classList.contains('torn') || isOpen) return;
+
+            el.classList.add('torn');
+            tornCount++;
+
+            if (tornCount >= TOTAL_CORNERS) {
+                setTimeout(() => {
+                    openBoxAndCelebrate();
+                }, 350);
+            } else {
+                // Hiện góc giấy kế tiếp sau một nhịp ngắn cho có nhịp điệu
+                const corners = document.querySelectorAll('.corner-wrap');
+                const nextCorner = corners[tornCount];
+                if (nextCorner) {
+                    setTimeout(() => {
+                        nextCorner.classList.add('corner-visible');
+                    }, 300);
+                }
+            }
+        }
+
+        function openBoxAndCelebrate() {
+            if (isOpen) return;
+            isOpen = true;
+
+            const container = document.getElementById('cardContainer');
+            const cake = document.getElementById('birthdayCake');
+            const card = document.getElementById('card');
+            const rain = document.getElementById('rainContainer');
+            const leftGif = document.getElementById('leftGif');
+            const rightGif = document.getElementById('rightGif');
+
+            container.classList.add('is-open');
+            container.classList.add('breathing');
+            rain.style.opacity = "0.2";
+
+            // 1. Rơi bánh kem
+            setTimeout(() => {
+                cake.classList.remove('cake-drop-animation');
+                void cake.offsetWidth;
+                cake.classList.add('cake-drop-animation');
+            }, 200);
+
+            // 2. Viết chữ lần lượt xuất hiện
+            setTimeout(() => {
+                const wordSpans = document.querySelectorAll('.word-span');
+                const totalWords = wordSpans.length;
+
+                wordSpans.forEach((span, index) => {
+                    setTimeout(() => {
+                        span.classList.add('write-active');
+
+                        // Kiểm tra xem đây có phải là TỪ CUỐI CÙNG không
+                        if (index === totalWords - 1) {
+                            // Khi chữ cuối cùng hiện lên, kích hoạt hiển thị 2 GIF góc ngay lập tức
+                            setTimeout(() => {
+                                leftGif.classList.add('show-gif');
+                                rightGif.classList.add('show-gif');
+                            }, 400);
+                        }
+                    }, index * 180); // Tốc độ gõ chữ (180ms/từ)
+                });
+            }, 800);
+
+            // 3. Pháo hoa và hiệu ứng nổ tung lấp lánh
+            setTimeout(() => {
+                const colors = ['#ff7597', '#f7d070', '#ffffff', '#ffb6c1', '#a0e7e5'];
+
+                for (let i = 0; i < 35; i++) {
+                    const confetti = document.createElement('div');
+                    confetti.classList.add('confetti', 'pop-confetti');
+                    confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.top = '50%';
+                    confetti.style.left = '50%';
+
+                    const angle = Math.random() * Math.PI * 2;
+                    const velocity = Math.random() * 150 + 80;
+                    const x = Math.cos(angle) * velocity + 'px';
+                    const y = Math.sin(angle) * velocity + 'px';
+
+                    confetti.style.setProperty('--x', x);
+                    confetti.style.setProperty('--y', y);
+                    card.appendChild(confetti);
+                    setTimeout(() => confetti.remove(), 800);
+                }
+
+                launchFullscreenCelebration();
+            }, 600);
+        }
+
+        // Bong bóng bay + pháo hoa phủ toàn màn hình khi mở thiệp xong
+        function launchFullscreenCelebration() {
+            const fx = document.getElementById('fullscreenFx');
+            if (!fx) return;
+
+            // Bong bóng bay lên khắp màn hình
+            for (let i = 0; i < 26; i++) {
+                const balloon = document.createElement('div');
+                balloon.className = 'fx-balloon';
+                balloon.innerText = '🎈';
+                balloon.style.left = Math.random() * 100 + 'vw';
+                balloon.style.setProperty('--sway', (Math.random() * 70 - 35) + 'px');
+                balloon.style.fontSize = (Math.random() * 20 + 26) + 'px';
+                balloon.style.animationDuration = (Math.random() * 3 + 4.5) + 's';
+                balloon.style.animationDelay = (Math.random() * 1.4) + 's';
+                balloon.style.filter = `hue-rotate(${Math.floor(Math.random() * 360)}deg) drop-shadow(0 4px 8px rgba(0,0,0,0.35))`;
+                fx.appendChild(balloon);
+                setTimeout(() => balloon.remove(), 8500);
+            }
+
+            // Nhiều đợt pháo hoa nổ ở các vị trí ngẫu nhiên khắp màn hình
+            const fwColors = ['#ff7597', '#f7d070', '#ffffff', '#a0e7e5', '#ffb6c1', '#c792ff'];
+            const bursts = 7;
+
+            for (let b = 0; b < bursts; b++) {
+                setTimeout(() => {
+                    const cx = Math.random() * 84 + 8;
+                    const cy = Math.random() * 55 + 8;
+
+                    const flash = document.createElement('div');
+                    flash.className = 'fx-flash';
+                    flash.style.left = cx + 'vw';
+                    flash.style.top = cy + 'vh';
+                    fx.appendChild(flash);
+                    setTimeout(() => flash.remove(), 400);
+
+                    for (let p = 0; p < 26; p++) {
+                        const spark = document.createElement('div');
+                        spark.className = 'fx-spark';
+                        const color = fwColors[Math.floor(Math.random() * fwColors.length)];
+                        spark.style.left = cx + 'vw';
+                        spark.style.top = cy + 'vh';
+                        spark.style.background = color;
+                        spark.style.color = color;
+
+                        const angle = Math.random() * Math.PI * 2;
+                        const dist = Math.random() * 130 + 60;
+                        spark.style.setProperty('--sx', Math.cos(angle) * dist + 'px');
+                        spark.style.setProperty('--sy', Math.sin(angle) * dist + 'px');
+
+                        fx.appendChild(spark);
+                        setTimeout(() => spark.remove(), 950);
+                    }
+                }, b * 380);
+            }
+        }
+
+        function closeBox(event) {
+            event.stopPropagation();
+
+            const container = document.getElementById('cardContainer');
+            const cake = document.getElementById('birthdayCake');
+            const rain = document.getElementById('rainContainer');
+            const leftGif = document.getElementById('leftGif');
+            const rightGif = document.getElementById('rightGif');
+
+            container.classList.remove('is-open');
+            container.classList.remove('breathing');
+            rain.style.opacity = "1";
+
+            const fx = document.getElementById('fullscreenFx');
+            if (fx) fx.innerHTML = '';
+
+            // Ẩn chữ viết và 2 GIF góc để chuẩn bị cho lần mở sau chạy lại
+            const wordSpans = document.querySelectorAll('.word-span');
+            wordSpans.forEach(span => span.classList.remove('write-active'));
+            leftGif.classList.remove('show-gif');
+            rightGif.classList.remove('show-gif');
+
+            // Khôi phục lại trạng thái ban đầu: ẩn 4 góc giấy, hiện lại mèo xác nhận
+            tornCount = 0;
+            const cover = document.getElementById('cardCover');
+            if (cover) cover.classList.remove('corners-visible');
+            document.querySelectorAll('.corner-wrap').forEach(el => {
+                el.classList.remove('torn');
+                el.classList.remove('corner-visible');
+            });
+            const catContainer = document.getElementById('catContainer');
+            if (catContainer) catContainer.classList.remove('cat-fade');
+
+            setTimeout(() => {
+                cake.classList.remove('cake-drop-animation');
+                isOpen = false;
+            }, 300);
+        }
+
+        // Tạo hiệu ứng mưa nền
+        const rainContainer = document.getElementById('rainContainer');
+        const catIcons = ['🐱', '🐾', '🐈', '😻', '✨'];
+        const rainColors = ['#ff7597', '#f7d070', '#ffffff', '#ffb6c1'];
+        const totalItems = 25;
+
+        for (let i = 0; i < totalItems; i++) {
+            const item = document.createElement('div');
+            item.classList.add('cat-rain-item');
+            item.innerHTML = catIcons[Math.floor(Math.random() * catIcons.length)];
+
+            item.style.fontSize = Math.random() * 16 + 12 + 'px';
+            item.style.color = rainColors[Math.floor(Math.random() * rainColors.length)];
+            item.style.left = Math.random() * 100 + 'vw';
+
+            item.style.animationDuration = Math.random() * 4 + 4 + 's';
+            item.style.animationDelay = Math.random() * 6 + 's';
+
+            rainContainer.appendChild(item);
+        }
+
+        // Particles lấp lánh (sao twinkle) để tăng chiều sâu cho nền
+        for (let i = 0; i < 45; i++) {
+            const star = document.createElement('div');
+            star.className = 'star-particle';
+            const size = Math.random() * 2.5 + 1;
+            star.style.width = size + 'px';
+            star.style.height = size + 'px';
+            star.style.left = Math.random() * 100 + 'vw';
+            star.style.top = Math.random() * 100 + 'vh';
+            star.style.animationDuration = (Math.random() * 2.5 + 1.5) + 's';
+            star.style.animationDelay = Math.random() * 3 + 's';
+            rainContainer.appendChild(star);
+        }
+
+        // Bóng bay bay lên từ dưới, lắc nhẹ tự nhiên (dùng ảnh GIF trong BALLOON_GIFS)
+        const balloonContainer = document.getElementById('balloonContainer');
+        for (let i = 0; i < 7; i++) {
+            const wrap = document.createElement('div');
+            wrap.className = 'balloon-item';
+            wrap.style.left = (Math.random() * 90 + 2) + 'vw';
+            wrap.style.animationDuration = (Math.random() * 6 + 10) + 's';
+            wrap.style.animationDelay = (Math.random() * 8) + 's';
+
+            const gifImg = document.createElement('img');
+            gifImg.className = 'balloon-gif';
+            gifImg.src = BALLOON_GIFS[Math.floor(Math.random() * BALLOON_GIFS.length)];
+            gifImg.alt = 'balloon';
+            wrap.appendChild(gifImg);
+            balloonContainer.appendChild(wrap);
+        }
+    </script>
+</body>
+</html>
