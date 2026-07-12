@@ -603,6 +603,11 @@
         .falling-cake.cake-clickable {
             pointer-events: auto;
             cursor: pointer;
+            /* Cố định vị trí + độ hiện rõ bằng CSS thường (không qua animation),
+               để khi animation lắc lư thay thế animation rơi, bánh kem
+               không bị rơi về style gốc (ẩn phía trên, opacity 0) và biến mất. */
+            top: -105px;
+            opacity: 1;
             animation: cake_idle_move 2.4s ease-in-out infinite;
         }
 
