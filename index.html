@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="referrer" content="no-referrer">
-    <title>Tặng em nè :D</title>
+    <title>Tặng Em Nè :D</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@500;700&display=swap" rel="stylesheet">
@@ -1527,6 +1527,13 @@
             cake.style.opacity = '1';
             cake.classList.remove('cake-clickable');
 
+            // QUAN TRỌNG: bánh kem vẫn còn giữ class "cake-drop-animation" (animation rơi
+            // ban đầu). Nếu chỉ gỡ class cake-clickable, animation rơi cũ đó sẽ được coi
+            // là animation "thắng" tiếp theo và bị KHỞI ĐỘNG LẠI TỪ ĐẦU, đè mất toàn bộ
+            // hiệu ứng nổ. Phải tắt hẳn bằng animation: none để không animation nào
+            // tranh giành quyền điều khiển transform/top/opacity với hiệu ứng nổ nữa.
+            cake.style.animation = 'none';
+
             // Đưa emoji bên trong về trạng thái bình thường để khung ngoài
             // toàn quyền điều khiển hiệu ứng phóng to lúc nổ.
             emoji.style.transition = 'none';
@@ -1652,6 +1659,7 @@
                 setTimeout(() => {
                     cake.style.transition = '';
                     cake.style.transform = '';
+                    cake.style.animation = '';
                     cakeIsExploding = false;
                     cake.classList.add('cake-clickable');
                 }, 470);
