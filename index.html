@@ -611,6 +611,14 @@
             animation: cake_idle_move 2.4s ease-in-out infinite;
         }
 
+        /* Lớp emoji bên trong: chịu trách nhiệm phóng to khi bấm,
+           tách biệt với animation lắc lư của khung ngoài (.falling-cake)
+           để cả hai chuyển động có thể chạy cùng lúc không xung đột. */
+        .cake-emoji {
+            display: inline-block;
+            transform-origin: center;
+        }
+
         @keyframes cake_idle_move {
             0%, 100% {
                 transform: translateX(-50%) translateY(0) scale(1) rotate(-4deg);
@@ -1102,7 +1110,7 @@
 
         <!-- MẶT NỀN TRONG THIỆP -->
         <div class="birthday-card" id="card">
-            <div class="falling-cake" id="birthdayCake" onclick="growCake()">🎂</div>
+            <div class="falling-cake" id="birthdayCake" onclick="growCake()"><span class="cake-emoji" id="cakeEmoji">🎂</span></div>
 
             <div class="card-inner-content">
                 <h1>HAPPY BIRTHDAY!</h1>
@@ -1488,25 +1496,15 @@
             if (!isOpen || cakeIsExploding) return;
 
             const cake = document.getElementById('birthdayCake');
-            if (!cake || !cake.classList.contains('cake-clickable')) return;
+            const emoji = document.getElementById('cakeEmoji');
+            if (!cake || !emoji || !cake.classList.contains('cake-clickable')) return;
 
             cakeClickCount++;
 
-            // QUAN TRỌNG: trước khi tắt animation rơi, phải "đóng băng" đúng
-            // vị trí + độ hiện tại (top, opacity) của bánh kem lại bằng inline style.
-            // Nếu không, khi animation bị tắt, bánh kem sẽ rơi về style gốc trong CSS
-            // (top: -250px; opacity: 0) và biến mất khỏi màn hình ngay lập tức.
-            if (cake.style.animation !== 'none') {
-                const computed = getComputedStyle(cake);
-                cake.style.top = computed.top;
-                cake.style.opacity = computed.opacity;
-                cake.style.animation = 'none';
-            }
-
             if (cakeClickCount < 3) {
                 const scale = 1 + cakeClickCount * 0.4; // to dần theo mỗi lần bấm
-                cake.style.transition = 'transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)';
-                cake.style.transform = `translateX(-50%) scale(${scale})`;
+                emoji.style.transition = 'transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)';
+                emoji.style.transform = `scale(${scale})`;
 
                 // Rung nhẹ cho vui mắt mỗi lần bấm
                 cake.style.filter = 'drop-shadow(0 0 30px rgba(247, 208, 112, 1))';
@@ -1514,14 +1512,25 @@
                     cake.style.filter = 'drop-shadow(0 0 25px rgba(247, 208, 112, 0.8))';
                 }, 300);
             } else {
-                explodeCake(cake);
+                explodeCake(cake, emoji);
             }
         }
 
         // Bánh kem nổ tung hoành tráng kèm nhiều đợt pháo hoa, sau đó tự hồi phục để bấm lại từ đầu
-        function explodeCake(cake) {
+        function explodeCake(cake, emoji) {
             cakeIsExploding = true;
+
+            // Giữ nguyên vị trí + độ hiện rõ bằng inline style TRƯỚC khi tắt animation
+            // lắc lư (bỏ class cake-clickable), để bánh kem không bị rơi về
+            // style gốc (ẩn phía trên, opacity 0) trong lúc đang nổ.
+            cake.style.top = '-105px';
+            cake.style.opacity = '1';
             cake.classList.remove('cake-clickable');
+
+            // Đưa emoji bên trong về trạng thái bình thường để khung ngoài
+            // toàn quyền điều khiển hiệu ứng phóng to lúc nổ.
+            emoji.style.transition = 'none';
+            emoji.style.transform = 'scale(1)';
 
             const rect = cake.getBoundingClientRect();
             const cx = rect.left + rect.width / 2;
@@ -1636,8 +1645,16 @@
                 cake.style.opacity = '1';
 
                 cakeClickCount = 0;
-                cakeIsExploding = false;
-                cake.classList.add('cake-clickable');
+
+                // Đợi cho hiệu ứng hồi phục phóng to chạy mượt xong rồi mới bật lại
+                // animation lắc lư (cake-clickable), tránh bị animation cắt ngang
+                // giữa chừng hiệu ứng hồi phục.
+                setTimeout(() => {
+                    cake.style.transition = '';
+                    cake.style.transform = '';
+                    cakeIsExploding = false;
+                    cake.classList.add('cake-clickable');
+                }, 470);
             }, 750);
         }
 
@@ -1692,6 +1709,11 @@
             cake.style.opacity = '';
             cake.style.filter = '';
             cake.style.top = '';
+            const cakeEmoji = document.getElementById('cakeEmoji');
+            if (cakeEmoji) {
+                cakeEmoji.style.transition = '';
+                cakeEmoji.style.transform = '';
+            }
 
             setTimeout(() => {
                 cake.classList.remove('cake-drop-animation');
