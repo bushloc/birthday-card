@@ -603,6 +603,25 @@
         .falling-cake.cake-clickable {
             pointer-events: auto;
             cursor: pointer;
+            animation: cake_idle_move 2.4s ease-in-out infinite;
+        }
+
+        @keyframes cake_idle_move {
+            0%, 100% {
+                transform: translateX(-50%) translateY(0) scale(1) rotate(-4deg);
+            }
+
+            25% {
+                transform: translateX(-50%) translateY(-6px) scale(1.015) rotate(3deg);
+            }
+
+            50% {
+                transform: translateX(-50%) translateY(-13px) scale(1.03) rotate(-2deg);
+            }
+
+            75% {
+                transform: translateX(-50%) translateY(-6px) scale(1.015) rotate(4deg);
+            }
         }
 
         .cake-drop-animation {
