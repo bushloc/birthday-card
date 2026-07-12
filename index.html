@@ -599,56 +599,14 @@
             filter: drop-shadow(0 0 25px rgba(247, 208, 112, 0.8));
         }
 
-        .cake-drop-animation {
-            animation: cake_bounce_land 1.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-        }
-
-        /* Bánh kem đã đáp xuống -> có thể bấm vào, nhấp nháy nhẹ mời gọi */
-        .card-perspective-container.is-open .falling-cake {
+        /* Sau khi rơi xong, bánh kem có thể bấm được: phóng to dần rồi nổ ở lần thứ 3 */
+        .falling-cake.cake-clickable {
             pointer-events: auto;
             cursor: pointer;
         }
 
-        .cake-invite-pulse {
-            animation: cake_invite_pulse 1.4s ease-in-out infinite;
-        }
-
-        @keyframes cake_invite_pulse {
-            0%, 100% {
-                top: -105px;
-                opacity: 1;
-                transform: translateX(-50%) scale(1) rotate(0deg);
-            }
-
-            50% {
-                top: -105px;
-                opacity: 1;
-                transform: translateX(-50%) scale(1.08) rotate(-3deg);
-            }
-        }
-
-        .cake-tap-hint {
-            position: absolute;
-            top: -140px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 0.68rem;
-            font-weight: bold;
-            color: #fff;
-            background: #ff7597;
-            padding: 4px 10px;
-            border-radius: 12px;
-            white-space: nowrap;
-            box-shadow: 0 3px 8px rgba(255, 117, 151, 0.55);
-            opacity: 0;
-            pointer-events: none;
-            z-index: 21;
-            animation: hint_pulse 1.3s ease-in-out infinite;
-            transition: opacity 0.4s ease;
-        }
-
-        .cake-tap-hint.show-hint {
-            opacity: 1;
+        .cake-drop-animation {
+            animation: cake_bounce_land 1.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
         }
 
         @keyframes cake_bounce_land {
@@ -923,49 +881,6 @@
             }
         }
 
-        /* Bong bóng xuất hiện khắp màn hình rồi "nổ tan" - dùng cho hiệu ứng bấm vào bánh kem */
-        .fx-balloon-pop {
-            position: absolute;
-            font-size: 34px;
-            transform: scale(0.2);
-            opacity: 0;
-            animation: fx_balloon_pop_in 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.35));
-        }
-
-        @keyframes fx_balloon_pop_in {
-            0% {
-                transform: scale(0.2) rotate(-8deg);
-                opacity: 0;
-            }
-
-            60% {
-                transform: scale(1.15) rotate(4deg);
-                opacity: 1;
-            }
-
-            100% {
-                transform: scale(1) rotate(0deg);
-                opacity: 1;
-            }
-        }
-
-        .fx-balloon-pop.popping {
-            animation: fx_balloon_pop_out 0.25s ease-in forwards;
-        }
-
-        @keyframes fx_balloon_pop_out {
-            0% {
-                transform: scale(1);
-                opacity: 1;
-            }
-
-            100% {
-                transform: scale(1.6);
-                opacity: 0;
-            }
-        }
-
         .fx-spark {
             position: absolute;
             width: 7px;
@@ -1163,10 +1078,7 @@
 
         <!-- MẶT NỀN TRONG THIỆP -->
         <div class="birthday-card" id="card">
-            <div class="falling-cake" id="birthdayCake" onclick="cakeExplode(event)">
-                🎂
-                <span class="cake-tap-hint" id="cakeTapHint">Bấm vào bánh đi! 🎉</span>
-            </div>
+            <div class="falling-cake" id="birthdayCake" onclick="growCake()">🎂</div>
 
             <div class="card-inner-content">
                 <h1>HAPPY BIRTHDAY!</h1>
@@ -1192,6 +1104,10 @@
         let tornCount = 0;
         const TOTAL_CORNERS = 4;
         const tornCorners = { tl: false, tr: false, bl: false, br: false };
+
+        // Đếm số lần bấm vào bánh kem: bấm lần 1, 2 sẽ to dần, lần 3 sẽ nổ
+        let cakeClickCount = 0;
+        let cakeIsExploding = false;
 
         // Cắt một góc "bị mất" (dạng vết xé lởm chởm) trên thân thiệp thật sự,
         // không chỉ mảnh giấy trang trí bay ra.
@@ -1419,7 +1335,6 @@
             const rain = document.getElementById('rainContainer');
             const leftGif = document.getElementById('leftGif');
             const rightGif = document.getElementById('rightGif');
-            const cakeHint = document.getElementById('cakeTapHint');
 
             container.classList.add('is-open');
             container.classList.add('breathing');
@@ -1428,15 +1343,15 @@
             // 1. Rơi bánh kem
             setTimeout(() => {
                 cake.classList.remove('cake-drop-animation');
+                cake.classList.remove('cake-clickable');
                 void cake.offsetWidth;
                 cake.classList.add('cake-drop-animation');
-            }, 200);
 
-            // 1b. Sau khi bánh đáp xuống, mời gọi người dùng bấm vào bánh
-            setTimeout(() => {
-                cake.classList.add('cake-invite-pulse');
-                if (cakeHint) cakeHint.classList.add('show-hint');
-            }, 1700);
+                // Sau khi bánh rơi xong (đúng lúc animation kết thúc), cho phép bấm để phóng to / nổ
+                setTimeout(() => {
+                    cake.classList.add('cake-clickable');
+                }, 1400);
+            }, 200);
 
             // 2. Viết chữ lần lượt xuất hiện
             setTimeout(() => {
@@ -1543,94 +1458,163 @@
         }
 
         // ================================================================
-        // 🎂 BẤM VÀO BÁNH KEM -> PHÁO HOA + BONG BÓNG NỔ KHẮP MÀN HÌNH
+        // 🎂 BẤM BÁNH KEM: lần 1 và 2 phóng to dần, lần 3 nổ tung kèm pháo hoa
         // ================================================================
-        let cakeBusy = false;
-
-        function cakeExplode(event) {
-            if (event) event.stopPropagation();
-            if (!isOpen || cakeBusy) return;
-
-            cakeBusy = true;
+        function growCake() {
+            if (!isOpen || cakeIsExploding) return;
 
             const cake = document.getElementById('birthdayCake');
-            const cakeHint = document.getElementById('cakeTapHint');
-            if (cakeHint) cakeHint.classList.remove('show-hint');
+            if (!cake || !cake.classList.contains('cake-clickable')) return;
 
-            // Bánh kem "giật mình" lắc lư khi bị bấm
-            cake.style.transition = 'transform 0.12s ease-in-out';
-            cake.style.transform = 'translateX(-50%) scale(1.25) rotate(8deg)';
-            setTimeout(() => {
-                cake.style.transform = 'translateX(-50%) scale(1) rotate(0deg)';
-                cake.style.transition = '';
-            }, 160);
+            cakeClickCount++;
 
-            // Pháo hoa nổ khắp màn hình (dùng lại hiệu ứng có sẵn)
-            launchFullscreenCelebration();
+            // QUAN TRỌNG: trước khi tắt animation rơi, phải "đóng băng" đúng
+            // vị trí + độ hiện tại (top, opacity) của bánh kem lại bằng inline style.
+            // Nếu không, khi animation bị tắt, bánh kem sẽ rơi về style gốc trong CSS
+            // (top: -250px; opacity: 0) và biến mất khỏi màn hình ngay lập tức.
+            if (cake.style.animation !== 'none') {
+                const computed = getComputedStyle(cake);
+                cake.style.top = computed.top;
+                cake.style.opacity = computed.opacity;
+                cake.style.animation = 'none';
+            }
 
-            // Thêm bong bóng xuất hiện khắp màn hình rồi tự nổ tan
-            spawnPoppingBalloons();
+            if (cakeClickCount < 3) {
+                const scale = 1 + cakeClickCount * 0.4; // to dần theo mỗi lần bấm
+                cake.style.transition = 'transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)';
+                cake.style.transform = `translateX(-50%) scale(${scale})`;
 
-            setTimeout(() => {
-                cakeBusy = false;
-            }, 900);
-        }
-
-        function spawnPoppingBalloons() {
-            const fx = document.getElementById('fullscreenFx');
-            if (!fx) return;
-
-            const emojis = ['🎈', '🎉', '🎊'];
-            const count = 16;
-
-            for (let i = 0; i < count; i++) {
+                // Rung nhẹ cho vui mắt mỗi lần bấm
+                cake.style.filter = 'drop-shadow(0 0 30px rgba(247, 208, 112, 1))';
                 setTimeout(() => {
-                    const balloon = document.createElement('div');
-                    balloon.className = 'fx-balloon-pop';
-                    balloon.innerText = emojis[Math.floor(Math.random() * emojis.length)];
-
-                    const vx = Math.random() * 90 + 5;
-                    const vy = Math.random() * 70 + 5;
-                    balloon.style.left = vx + 'vw';
-                    balloon.style.top = vy + 'vh';
-                    balloon.style.fontSize = (Math.random() * 18 + 26) + 'px';
-
-                    fx.appendChild(balloon);
-
-                    // Sau khi bong bóng "phồng" lên xong, cho nó nổ tan thành các tia lấp lánh
-                    setTimeout(() => {
-                        balloon.classList.add('popping');
-                        spawnMiniBurst(vx, vy);
-                        setTimeout(() => balloon.remove(), 260);
-                    }, 480 + Math.random() * 260);
-                }, i * 70);
+                    cake.style.filter = 'drop-shadow(0 0 25px rgba(247, 208, 112, 0.8))';
+                }, 300);
+            } else {
+                explodeCake(cake);
             }
         }
 
-        // Một cụm tia lấp lánh nhỏ khi bong bóng nổ, dùng chung màu với pháo hoa
-        function spawnMiniBurst(vx, vy) {
+        // Bánh kem nổ tung hoành tráng kèm nhiều đợt pháo hoa, sau đó tự hồi phục để bấm lại từ đầu
+        function explodeCake(cake) {
+            cakeIsExploding = true;
+            cake.classList.remove('cake-clickable');
+
+            const rect = cake.getBoundingClientRect();
+            const cx = rect.left + rect.width / 2;
+            const cy = rect.top + rect.height / 2;
             const fx = document.getElementById('fullscreenFx');
-            if (!fx) return;
+            const colors = ['#ff7597', '#f7d070', '#ffffff', '#a0e7e5', '#ffb6c1', '#c792ff', '#ffde59', '#ff5e78'];
 
-            const colors = ['#ff7597', '#f7d070', '#ffffff', '#a0e7e5', '#ffb6c1', '#c792ff'];
-
-            for (let p = 0; p < 10; p++) {
-                const spark = document.createElement('div');
-                spark.className = 'fx-spark';
-                const color = colors[Math.floor(Math.random() * colors.length)];
-                spark.style.left = vx + 'vw';
-                spark.style.top = vy + 'vh';
-                spark.style.background = color;
-                spark.style.color = color;
-
-                const angle = Math.random() * Math.PI * 2;
-                const dist = Math.random() * 50 + 20;
-                spark.style.setProperty('--sx', Math.cos(angle) * dist + 'px');
-                spark.style.setProperty('--sy', Math.sin(angle) * dist + 'px');
-
-                fx.appendChild(spark);
-                setTimeout(() => spark.remove(), 700);
+            // Rung nhẹ toàn màn hình cho cảm giác "nổ" mạnh hơn
+            const shakeTarget = document.getElementById('cardContainer');
+            if (shakeTarget) {
+                shakeTarget.style.transition = 'transform 0.08s ease-in-out';
+                let shakeCount = 0;
+                const shakeInterval = setInterval(() => {
+                    shakeCount++;
+                    const offsetX = (Math.random() - 0.5) * 14;
+                    const offsetY = (Math.random() - 0.5) * 14;
+                    shakeTarget.style.transform = `translate(${offsetX}px, ${offsetY}px)`;
+                    if (shakeCount >= 6) {
+                        clearInterval(shakeInterval);
+                        shakeTarget.style.transform = '';
+                    }
+                }, 60);
             }
+
+            // Một đợt chớp sáng cực lớn ngay tâm vụ nổ
+            if (fx) {
+                const bigFlash = document.createElement('div');
+                bigFlash.className = 'fx-flash';
+                bigFlash.style.left = cx + 'px';
+                bigFlash.style.top = cy + 'px';
+                bigFlash.style.width = '22px';
+                bigFlash.style.height = '22px';
+                bigFlash.style.background = '#fff8e8';
+                fx.appendChild(bigFlash);
+                setTimeout(() => bigFlash.remove(), 500);
+            }
+
+            // Hàm bắn 1 đợt pháo hoa + mảnh vụn to từ 1 tâm điểm
+            function fireBurst(centerX, centerY, sparkCount, distMin, distMax) {
+                if (!fx) return;
+
+                const flash = document.createElement('div');
+                flash.className = 'fx-flash';
+                flash.style.left = centerX + 'px';
+                flash.style.top = centerY + 'px';
+                flash.style.width = '12px';
+                flash.style.height = '12px';
+                fx.appendChild(flash);
+                setTimeout(() => flash.remove(), 450);
+
+                for (let p = 0; p < sparkCount; p++) {
+                    const spark = document.createElement('div');
+                    spark.className = 'fx-spark';
+                    const color = colors[Math.floor(Math.random() * colors.length)];
+                    const size = Math.random() * 5 + 6;
+                    spark.style.left = centerX + 'px';
+                    spark.style.top = centerY + 'px';
+                    spark.style.width = size + 'px';
+                    spark.style.height = size + 'px';
+                    spark.style.background = color;
+                    spark.style.color = color;
+
+                    const angle = Math.random() * Math.PI * 2;
+                    const dist = Math.random() * (distMax - distMin) + distMin;
+                    spark.style.setProperty('--sx', Math.cos(angle) * dist + 'px');
+                    spark.style.setProperty('--sy', Math.sin(angle) * dist + 'px');
+
+                    fx.appendChild(spark);
+                    setTimeout(() => spark.remove(), 1000);
+                }
+
+                // Mảnh vụn hình chữ nhật to bay xa hơn, tạo cảm giác "mảnh bánh kem văng ra"
+                for (let s = 0; s < 10; s++) {
+                    const shred = document.createElement('div');
+                    shred.className = 'fx-shred';
+                    shred.style.left = centerX + 'px';
+                    shred.style.top = centerY + 'px';
+                    shred.style.width = '13px';
+                    shred.style.height = '18px';
+                    shred.style.background = `linear-gradient(135deg, ${colors[Math.floor(Math.random() * colors.length)]}, rgba(255,255,255,0.9))`;
+
+                    const angle = Math.random() * Math.PI * 2;
+                    const dist = Math.random() * 140 + 90;
+                    shred.style.setProperty('--sx', Math.cos(angle) * dist + 'px');
+                    shred.style.setProperty('--sy', Math.sin(angle) * dist + 'px');
+                    shred.style.setProperty('--rot', (Math.random() * 600 - 300) + 'deg');
+
+                    fx.appendChild(shred);
+                    setTimeout(() => shred.remove(), 750);
+                }
+            }
+
+            // Nổ nhiều đợt liên tiếp, hơi lệch tâm mỗi lần, giống nổ chùm cho hoành tráng
+            fireBurst(cx, cy, 70, 100, 260);
+            setTimeout(() => fireBurst(cx - 25, cy - 20, 45, 80, 200), 120);
+            setTimeout(() => fireBurst(cx + 30, cy + 15, 45, 80, 200), 240);
+            setTimeout(() => fireBurst(cx, cy - 35, 35, 70, 180), 380);
+
+            // Bánh kem phóng to mạnh, rung lắc rồi biến mất
+            cake.style.transition = 'transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s ease-out';
+            cake.style.transform = 'translateX(-50%) scale(3.6) rotate(25deg)';
+            cake.style.opacity = '0';
+
+            // Sau đó bánh kem quay lại từ đầu để có thể bấm lại (lặp vòng lần 1-2-3)
+            setTimeout(() => {
+                cake.style.transition = 'none';
+                cake.style.transform = 'translateX(-50%) scale(0.4) rotate(0deg)';
+                cake.style.opacity = '0';
+                void cake.offsetWidth;
+                cake.style.transition = 'transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s ease';
+                cake.style.transform = 'translateX(-50%) scale(1) rotate(0deg)';
+                cake.style.opacity = '1';
+
+                cakeClickCount = 0;
+                cakeIsExploding = false;
+                cake.classList.add('cake-clickable');
+            }, 750);
         }
 
         function closeBox(event) {
@@ -1641,7 +1625,6 @@
             const rain = document.getElementById('rainContainer');
             const leftGif = document.getElementById('leftGif');
             const rightGif = document.getElementById('rightGif');
-            const cakeHint = document.getElementById('cakeTapHint');
 
             container.classList.remove('is-open');
             container.classList.remove('breathing');
@@ -1655,10 +1638,6 @@
             wordSpans.forEach(span => span.classList.remove('write-active'));
             leftGif.classList.remove('show-gif');
             rightGif.classList.remove('show-gif');
-
-            // Đưa bánh kem về trạng thái ban đầu (bỏ nhấp nháy mời bấm)
-            cake.classList.remove('cake-invite-pulse');
-            if (cakeHint) cakeHint.classList.remove('show-hint');
 
             // Khôi phục lại trạng thái ban đầu: ẩn 4 góc giấy, hiện lại mèo xác nhận
             tornCount = 0;
@@ -1678,6 +1657,17 @@
             });
             const catContainer = document.getElementById('catContainer');
             if (catContainer) catContainer.classList.remove('cat-fade');
+
+            // Khôi phục lại bánh kem về trạng thái ban đầu cho lần mở kế tiếp
+            cakeClickCount = 0;
+            cakeIsExploding = false;
+            cake.classList.remove('cake-clickable');
+            cake.style.animation = '';
+            cake.style.transition = '';
+            cake.style.transform = '';
+            cake.style.opacity = '';
+            cake.style.filter = '';
+            cake.style.top = '';
 
             setTimeout(() => {
                 cake.classList.remove('cake-drop-animation');
