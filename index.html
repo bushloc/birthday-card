@@ -1054,6 +1054,29 @@
                 transform: translateY(68%) rotate(0deg);
             }
         }
+
+        /* Chữ ký ở góc dưới bên trái thiệp */
+        .card-signature {
+            position: absolute;
+            left: 18px;
+            bottom: 14px;
+            font-family: 'Dancing Script', cursive;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #f7d070;
+            text-shadow: 0 0 6px rgba(247, 208, 112, 0.5);
+            opacity: 0;
+            transform: translateY(6px);
+            transition: opacity 0.6s ease 1.4s, transform 0.6s ease 1.4s;
+            z-index: 21;
+            pointer-events: none;
+            letter-spacing: 1px;
+        }
+
+        .card-perspective-container.is-open .card-signature {
+            opacity: 1;
+            transform: translateY(0);
+        }
     </style>
 </head>
 <body>
@@ -1123,6 +1146,8 @@
 
                 <button class="close-btn" onclick="closeBox(event)">Đóng lại ↩</button>
             </div>
+
+            <div class="card-signature">JN</div>
         </div>
 
         <img src="https://i.imgur.com/nnCiiiA.gif" alt="Mascot GIF" class="corner-mascot">
